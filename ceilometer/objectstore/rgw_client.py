@@ -52,7 +52,8 @@ class RGWAdminClient(object):
 
     def get_bucket(self, tenant_id):
         path = "bucket"
-        req_params = {"uid": tenant_id, "stats": "true"}
+        rgw_uid = "%s$%s" % (tenant_id, tenant_id)
+        req_params = {"uid": rgw_uid, "stats": "true"}
         json_data = self._make_request(path, req_params)
         stats = {'num_buckets': 0, 'buckets': [], 'size': 0, 'num_objects': 0}
         stats['num_buckets'] = len(json_data)
@@ -66,8 +67,9 @@ class RGWAdminClient(object):
         return stats
 
     def get_usage(self, tenant_id):
+        rgw_uid = "%s$%s" % (tenant_id, tenant_id)
         path = "usage"
-        req_params = {"uid": tenant_id}
+        req_params = {"uid": rgw_uid}
         json_data = self._make_request(path, req_params)
         usage_data = json_data["summary"]
         return sum((it["total"]["ops"] for it in usage_data))
